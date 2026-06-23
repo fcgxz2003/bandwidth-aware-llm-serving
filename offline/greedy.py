@@ -7,13 +7,6 @@ from Class import Model, Adapter, Request, Cloudlet
 from utils import compute_pull_delays
 import config as C
 
-# ── Diagnostic instrumentation (no behavioural effect) ──
-# When TRACE_ENABLED is True, every accepted candidate appends a tuple
-# (density, gain, size, tag) to ACCEPT_TRACE so the marginal-gain-density
-# distribution of preheated items can be inspected before deciding a cutoff.
-TRACE_ENABLED = False
-ACCEPT_TRACE: list[tuple[float, float, float, str]] = []
-
 # ── Marginal-gain-density cutoff (Algorithm 1, optional) ──
 # When > 0, the greedy stops preheating once the best remaining candidate's
 # marginal-gain density (delay reduction per GB pulled) falls below this
@@ -156,33 +149,28 @@ def offline_greedy(
                         gain += reduction
             return gain, size
 
-    # max-heap via negated density
+    # max-heap via negated density. Equal-density candidates are extremely
+    # common because the delay matrix is a 3-level step function, so the
+    # tie-break must be deterministic for reproducibility. We assign each
+    # candidate a fixed-seed random key (carried through the heap so a lazily
+    # re-inserted candidate keeps the same key) instead of id(cand), whose
+    # value depended on the run-time memory layout.
+    tie_rng = np.random.default_rng(C.TIE_SEED)
+    tie_keys = tie_rng.random(len(candidates))
     heap = []
-    for cand in candidates:
+    for seq, cand in enumerate(candidates):
         tag, ci, mid, qt = cand
         gain, size = _marginal_gain(tag, ci, mid, qt)
         density = gain / size if size > 0 else 0.0
-        heapq.heappush(heap, (-density, id(cand), cand, gain, size))
+        heapq.heappush(heap, (-density, float(tie_keys[seq]), cand, gain, size))
 
-    # ── Step 4: best single element e* ──
-    best_single = None
-    best_single_gain = 0.0
-    for entry in heap:
-        neg_d, _, cand, gain, size = entry
-        tag, ci, mid, qt = cand
-        if size <= budget[ci]:
-            if gain > best_single_gain:
-                best_single_gain = gain
-                best_single = cand
-
-    # ── Step 5: greedy loop ──
+    # ── Step 4: greedy loop ──
     mu: dict[tuple[int, int], bool] = {}
     nu: dict[tuple[int, int, int], bool] = {}
-    greedy_gain = 0.0
     placed: dict[int, set] = {cl.id: set() for cl in cloudlets}
 
     while heap:
-        neg_d, _, cand, old_gain, size = heapq.heappop(heap)
+        neg_d, tie, cand, old_gain, size = heapq.heappop(heap)
         tag, ci, mid, qt = cand
 
         gain, size = _marginal_gain(tag, ci, mid, qt)
@@ -191,7 +179,7 @@ def offline_greedy(
         if heap:
             top_neg_d = heap[0][0]
             if -density > top_neg_d:
-                heapq.heappush(heap, (-density, id(cand), cand, gain, size))
+                heapq.heappush(heap, (-density, tie, cand, gain, size))
                 continue
 
         # density cutoff: this candidate is now the true max-density item, so
@@ -220,15 +208,10 @@ def offline_greedy(
             cl.cache_adapter(adapters_dict[(mid, qt)])
             placed[ci].add(("W", (mid, qt)))
 
-        if TRACE_ENABLED:
-            ACCEPT_TRACE.append((density, gain, size, tag))
-
         budget[ci] -= size
         residual_registry -= size
         for idx in range(num_cl):
             budget[idx] = min(budget[idx], residual_registry)
-
-        greedy_gain += gain
 
         for k in req_by_model.get(mid, []):
             if tag == "M":
@@ -241,9 +224,5 @@ def offline_greedy(
                     new_d = delta[ci, requests[k].home] * adp.size_gb
                     if new_d < D_W[k]:
                         D_W[k] = new_d
-
-    # ── Step 6: keep better of greedy solution vs best single element ──
-    if best_single is not None and best_single_gain > greedy_gain:
-        pass
 
     return mu, nu

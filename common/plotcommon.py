@@ -1,9 +1,8 @@
 """Shared plotting layer for the evaluation figures.
 
-The plotting scripts (``plot_offline.py``, ``plot_online.py``,
-``plot_ablation.py``) read the JSON produced by the experiment scripts and
-render the bar charts consumed by the paper. No simulation runs here, so
-restyling a figure is instant.
+The plotting scripts (``plot_offline.py``, ``plot_online.py``) read the JSON
+produced by the experiment scripts and render the bar charts consumed by the
+paper. No simulation runs here, so restyling a figure is instant.
 """
 
 from __future__ import annotations
@@ -132,6 +131,8 @@ def lines(
     xticks=None,
     markevery=None,
     figsize=(8, 6),
+    legend_loc="upper left",
+    legend_ncol=2,
 ):
     """Multi-series line chart over a time axis.
 
@@ -184,7 +185,7 @@ def lines(
         ax.set_yticks(list(yticks))
         ax.set_ylim(0, list(yticks)[-1])
     if legend:
-        ax.legend(prop={"size": 22}, ncol=2, framealpha=0.9, loc="upper left")
+        ax.legend(prop={"size": 22}, ncol=legend_ncol, framealpha=0.9, loc=legend_loc)
     ax.set_zorder(2)
     ax.patch.set_visible(False)
     fig.tight_layout()

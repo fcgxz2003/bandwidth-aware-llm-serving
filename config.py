@@ -62,7 +62,6 @@ MODEL_CATALOG = [
     ("Yi-34B", 19.0),
 ]
 NUM_FOUNDATION_MODELS = len(MODEL_CATALOG)  # |L| = 30
-FM_SIZE_RANGE_GB = (0.5, 20)  # foundation model size range (GB), kept for fallback
 NUM_SERVICE_TYPES = 10  # |Q|: task-specific fine-tuned adapters per model
 # Adapter (LoRA/QLoRA) sizes follow real task-specific adapters such as the
 # Predibase "LoRA Land" collection (27 task adapters on Mistral-7B): a rank-16
@@ -88,6 +87,7 @@ CACHE_CAPACITY_RANGE_GB = (16, 48)  # per-cloudlet cache capacity range (GB)
 OMEGA_R = 0.3  # R-EWMA smoothing factor
 OMEGA_D = 0.3  # D-EWMA smoothing factor
 THETA = 0.5  # blend weight for demand estimate
+TIE_SEED = 6  # fixed seed for the greedy's equal-density tie-break (reproducibility)
 H_PERIODS = 48  # daily periods for D-EWMA
 SLOT_MINUTES = 30  # slot length (minutes)
 SLOTS_PER_DAY = 24 * 60 // SLOT_MINUTES  # 48
@@ -98,9 +98,6 @@ SLOTS_PER_DAY = 24 * 60 // SLOT_MINUTES  # 48
 CLUSTER_SLOT_GB = CLUSTER_BW_GBPS * SLOT_MINUTES * 60 / 8  # per cloudlet
 REGISTRY_SLOT_GB = REGISTRY_BW_GBPS * SLOT_MINUTES * 60 / 8  # registry uplink
 
-# ── Simulation ────────────────────────────────────────────
-NUM_DAYS = 3  # simulation duration (days)
-NUM_REPLAYS = 20  # independent replays for averaging
 
 # ── Network delay (ms/MB) ── step function of geo-distance
 DELTA_LOCAL = 0.0  # local cache hit

@@ -4,10 +4,9 @@ This module holds everything the *experiment* scripts need to run the
 simulator: the cluster fixture, the offline/online method runners, and small
 JSON helpers to persist results to ``experiment/results/``.
 
-The experiment scripts (``exp_offline.py``, ``exp_online.py``,
-``exp_ablation.py``) compute metrics and save them as JSON; the plotting
-scripts (``plot_*.py``) only read those JSON files, so changing a figure's
-style never re-runs the simulation.
+The experiment scripts (``exp_offline.py``, ``exp_online.py``) compute metrics
+and save them as JSON; the plotting scripts (``plot_*.py``) only read those JSON
+files, so changing a figure's style never re-runs the simulation.
 """
 
 from __future__ import annotations
@@ -75,7 +74,7 @@ def build_cluster(seed):
     user_coords = load_eua_user_coords()
     user_assign = assign_users_to_cloudlets(user_coords, cl_coords)
     num_cl = len(cl_coords)
-    models = create_models(rng)
+    models = create_models()
     adapters = create_adapters(models, rng)
     models_dict = {m.id: m for m in models}
     adapters_dict = {(a.model_id, a.service_type): a for a in adapters}

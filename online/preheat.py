@@ -16,11 +16,20 @@ class DemandEstimator:
       - D-EWMA: lambda^D_{i,j,m}(p)   daily-periodic estimate (H periods)
     """
 
-    def __init__(self, num_cloudlets: int, num_models: int, num_services: int):
+    def __init__(
+        self,
+        num_cloudlets: int,
+        num_models: int,
+        num_services: int,
+        theta: float | None = None,
+    ):
         shape = (num_cloudlets, num_models, num_services)
         self.lambda_R = np.zeros(shape)
         self.lambda_D = np.zeros((C.H_PERIODS, *shape))
         self._shape = shape
+        # blend weight between R-EWMA and D-EWMA; defaults to the global config
+        # so the production path is unchanged, but the ablation can override it.
+        self.theta = C.THETA if theta is None else theta
 
     def update(self, slot: int, counts: np.ndarray):
         self.lambda_R = (1 - C.OMEGA_R) * self.lambda_R + C.OMEGA_R * counts
@@ -30,7 +39,7 @@ class DemandEstimator:
     def estimate(self, slot: int) -> np.ndarray:
         next_slot = slot + 1
         p_next = next_slot % C.SLOTS_PER_DAY * C.H_PERIODS // C.SLOTS_PER_DAY
-        return (1 - C.THETA) * self.lambda_D[p_next] + C.THETA * self.lambda_R
+        return (1 - self.theta) * self.lambda_D[p_next] + self.theta * self.lambda_R
 
 
 def _count_demands(requests, num_cloudlets, num_models, num_services):
@@ -71,14 +80,20 @@ def run_preheat(
     models_dict: dict[int, Model],
     adapters_dict: dict[tuple[int, int], Adapter],
     delta: np.ndarray,
+    theta: float | None = None,
 ) -> dict:
-    """Run Algorithm 2: online continuous preheating."""
+    """Run Algorithm 2: online continuous preheating.
+
+    ``theta`` overrides the global R-EWMA/D-EWMA blend weight for ablation
+    runs (theta=1 -> R-EWMA only, theta=0 -> D-EWMA only); ``None`` keeps the
+    configured default.
+    """
     T = len(all_requests)
     num_cl = len(cloudlets)
     num_models = len(models_dict)
     num_services = C.NUM_SERVICE_TYPES
 
-    estimator = DemandEstimator(num_cl, num_models, num_services)
+    estimator = DemandEstimator(num_cl, num_models, num_services, theta=theta)
     pull_times, hit_rates, bts_volumes, idle_bw = [], [], [], []
 
     slot_bw = C.CLUSTER_SLOT_GB

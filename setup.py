@@ -81,16 +81,9 @@ def assign_users_to_cloudlets(
 # ═══════════════════════ Cluster initialisation ══════════════════════
 
 
-def create_models(rng: np.random.Generator) -> list[Model]:
-    """Create foundation models from the real open-source model catalog.
-
-    Falls back to uniform sampling over FM_SIZE_RANGE_GB if no catalog is set.
-    """
-    catalog = getattr(C, "MODEL_CATALOG", None)
-    if catalog:
-        return [Model(id=j, size_gb=size) for j, (_, size) in enumerate(catalog)]
-    sizes = rng.uniform(*C.FM_SIZE_RANGE_GB, size=C.NUM_FOUNDATION_MODELS)
-    return [Model(id=j, size_gb=round(s, 2)) for j, s in enumerate(sizes)]
+def create_models() -> list[Model]:
+    """Create foundation models from the real open-source model catalog."""
+    return [Model(id=j, size_gb=size) for j, (_, size) in enumerate(C.MODEL_CATALOG)]
 
 
 def create_adapters(models: list[Model], rng: np.random.Generator) -> list[Adapter]:
