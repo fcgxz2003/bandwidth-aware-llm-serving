@@ -1,1 +1,1 @@
-bandwidth-aware-llm-serveing
+bandwidth-aware-llm-serving
