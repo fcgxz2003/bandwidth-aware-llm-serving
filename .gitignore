@@ -1,0 +1,19 @@
+# Python bytecode cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+
+# Editor/OS
+.DS_Store
+.idea/
+.vscode/
+
+# Temporary experiment artifacts
+_*.py
+
+# Generated experiment results (regenerate with run_all.py)
+results/
