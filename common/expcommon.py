@@ -33,8 +33,6 @@ from setup import (
     zipf_weights,
     generate_requests_for_slot,
     generate_daily_trace,
-    generate_release_trace,
-    generate_mixed_trace,
 )
 from utils import compute_pull_delays, compute_bts_volume
 from offline import offline_greedy, offline_popularity
@@ -197,21 +195,4 @@ def run_online_methods(fx, trace):
 def daily_trace(fx, rng, num_slots, mean):
     return generate_daily_trace(
         fx["models"], rng, num_slots, mean, fx["user_assign"], fx["num_cl"]
-    )
-
-
-def release_trace(fx, rng, num_slots, mean):
-    return generate_release_trace(
-        fx["models"], rng, num_slots, mean, fx["user_assign"], fx["num_cl"]
-    )
-
-
-def mixed_trace(fx, rng, num_slots, mean):
-    return generate_mixed_trace(
-        fx["models"],
-        rng,
-        num_slots,
-        mean,
-        user_assignments=fx["user_assign"],
-        num_cloudlets=fx["num_cl"],
     )

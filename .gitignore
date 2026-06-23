@@ -17,3 +17,6 @@ _*.py
 
 # Generated experiment results (regenerate with run_all.py)
 results/
+
+# Local pre-edit backups
+backups_*/
