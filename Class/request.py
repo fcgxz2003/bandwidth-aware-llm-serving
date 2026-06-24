@@ -2,7 +2,7 @@
 
 
 class Request:
-    """Inference request r^t_k = (h_k, q_k) with scheduled model z_{k,j}."""
+    """Inference request r^t_k = (h_k, q_k)."""
 
     def __init__(self, home: int, service_type: int, model_id: int):
         self.home = home                # h_k: home cloudlet index

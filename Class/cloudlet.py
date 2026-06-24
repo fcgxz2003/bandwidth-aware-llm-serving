@@ -47,15 +47,11 @@ class Cloudlet:
         return True
 
     def evict_model(self, model_id: int):
-        """Evict a foundation model and all its adapters."""
+        """Evict a foundation model. Its adapters are kept on the cloudlet."""
         if model_id not in self.cached_models:
             return
         self.cached_models.discard(model_id)
         self._model_sizes.pop(model_id, None)
-        to_remove = [k for k in self.cached_adapters if k[0] == model_id]
-        for k in to_remove:
-            self.cached_adapters.discard(k)
-            self._adapter_sizes.pop(k, None)
 
     def evict_adapter(self, key: tuple[int, int]):
         """Evict a single adapter."""
