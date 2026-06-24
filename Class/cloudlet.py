@@ -47,11 +47,19 @@ class Cloudlet:
         return True
 
     def evict_model(self, model_id: int):
-        """Evict a foundation model. Its adapters are kept on the cloudlet."""
+        """Evict a foundation model along with its co-cached adapters.
+
+        Under the co-caching design an adapter is only useful when its
+        foundation model is co-located on the same cloudlet, so evicting the
+        model also releases all of its adapters to reclaim their storage.
+        """
         if model_id not in self.cached_models:
             return
         self.cached_models.discard(model_id)
         self._model_sizes.pop(model_id, None)
+        for key in [k for k in self.cached_adapters if k[0] == model_id]:
+            self.cached_adapters.discard(key)
+            self._adapter_sizes.pop(key, None)
 
     def evict_adapter(self, key: tuple[int, int]):
         """Evict a single adapter."""
