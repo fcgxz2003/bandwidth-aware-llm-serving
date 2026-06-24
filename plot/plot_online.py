@@ -56,6 +56,7 @@ def _ts_pull(data):
         markevery=10,
         xticks=list(range(0, len(x) + 1, 10)),
         height_ratios=(1, 1),
+        figsize=(16, 7),
     )
 
 

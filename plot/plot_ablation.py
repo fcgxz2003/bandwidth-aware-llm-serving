@@ -60,7 +60,7 @@ def _gain(data):
         demand=demand,
         figsize=(16, 6),
         markevery=10,
-        yticks=[0, 200, 400, 600, 800, 1000],
+        yticks=[0, 200, 400, 600, 800],
         xticks=list(range(0, len(x) + 1, 10)),
         legend_loc="upper left",
         legend_ncol=3,

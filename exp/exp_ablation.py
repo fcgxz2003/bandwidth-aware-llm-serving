@@ -37,7 +37,7 @@ LABELS = {
 }
 
 
-def main(num_days: int = 3, seed: int = 42):
+def main(num_days: int = 3, seed: int = 53):
     fx = E.build_cluster(seed)
     num_slots = num_days * C.SLOTS_PER_DAY
     rng = np.random.default_rng(seed)
@@ -86,6 +86,6 @@ def main(num_days: int = 3, seed: int = 42):
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="DEWMA component ablation")
     p.add_argument("--days", type=int, default=3)
-    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--seed", type=int, default=53)
     args = p.parse_args()
     main(args.days, args.seed)

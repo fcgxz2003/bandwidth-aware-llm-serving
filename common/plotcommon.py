@@ -321,6 +321,10 @@ def lines_broken(
         axt.legend(prop={"size": 22}, ncol=2, framealpha=0.9, loc="upper right")
 
     fig.tight_layout()
+    # tight_layout reserves a wide left margin for the y tick labels, which
+    # leaves a visible gap between the (far-left) supylabel and the axes. Pull
+    # the axes leftward so the plotting area expands and the gap shrinks.
+    fig.subplots_adjust(left=0.09)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     fig.savefig(out, format="pdf")
     plt.close(fig)
