@@ -7,9 +7,11 @@ history. Adapters of a preheated model are co-cached for the service types that
 have been observed for that model.
 """
 
-from __future__ import annotations
 import numpy as np
-from Class import Model, Adapter, Request, Cloudlet
+from Class.model import Model
+from Class.adapter import Adapter
+from Class.request import Request
+from Class.cloudlet import Cloudlet
 from utils import compute_pull_delays, compute_bts_volume, serve_and_cache_lru
 import config as C
 
@@ -100,7 +102,7 @@ def run_mab(
             cl = cloudlets[ci]
             if cl.has_model(mid):
                 continue
-            size = models_dict[mid].size_gb
+            size = models_dict[mid].size
             if size > cl_budget[ci] or size > residual_registry:
                 continue
             cl.cache_model(models_dict[mid])
@@ -113,12 +115,12 @@ def run_mab(
                 if not seen_service[ci, mid, qt]:
                     continue
                 adp = adapters_dict[(mid, qt)]
-                if adp.size_gb <= cl_budget[ci] and adp.size_gb <= residual_registry:
+                if adp.size <= cl_budget[ci] and adp.size <= residual_registry:
                     if cl.cache_adapter(adp):
                         last_used[(ci, ("W", (mid, qt)))] = t
-                        cl_budget[ci] -= adp.size_gb
-                        residual_registry -= adp.size_gb
-                        slot_preheat += adp.size_gb
+                        cl_budget[ci] -= adp.size
+                        residual_registry -= adp.size
+                        slot_preheat += adp.size
 
         idle_bw.append(slot_preheat)
 

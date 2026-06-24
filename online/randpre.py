@@ -1,8 +1,10 @@
 """RandPre baseline: random preheating using residual bandwidth each slot."""
 
-from __future__ import annotations
 import numpy as np
-from Class import Model, Adapter, Request, Cloudlet
+from Class.model import Model
+from Class.adapter import Adapter
+from Class.request import Request
+from Class.cloudlet import Cloudlet
 from utils import compute_pull_delays, compute_bts_volume, serve_and_cache_lru
 import config as C
 
@@ -57,27 +59,27 @@ def run_randpre(
                 m = models_dict[mid]
                 if (
                     not cl.has_model(mid)
-                    and m.size_gb <= remaining
-                    and m.size_gb <= residual_registry
+                    and m.size <= remaining
+                    and m.size <= residual_registry
                 ):
                     cl.cache_model(m)
                     last_used[(cl.id, ("M", mid))] = t
-                    remaining -= m.size_gb
-                    residual_registry -= m.size_gb
-                    slot_preheat += m.size_gb
+                    remaining -= m.size
+                    residual_registry -= m.size
+                    slot_preheat += m.size
             for idx in rng.permutation(len(all_adapter_keys)):
                 ak = all_adapter_keys[idx]
                 adp = adapters_dict[ak]
                 if (
                     not cl.has_adapter(*ak)
-                    and adp.size_gb <= remaining
-                    and adp.size_gb <= residual_registry
+                    and adp.size <= remaining
+                    and adp.size <= residual_registry
                 ):
                     cl.cache_adapter(adp)
                     last_used[(cl.id, ("W", ak))] = t
-                    remaining -= adp.size_gb
-                    residual_registry -= adp.size_gb
-                    slot_preheat += adp.size_gb
+                    remaining -= adp.size
+                    residual_registry -= adp.size
+                    slot_preheat += adp.size
         idle_bw.append(slot_preheat)
 
     return {

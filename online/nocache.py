@@ -6,9 +6,11 @@ cloudlet so that nearby peers can later fetch it peer-to-peer. No preheating is
 performed and storage is reclaimed with least-recently-used (LRU) eviction.
 """
 
-from __future__ import annotations
 import numpy as np
-from Class import Model, Adapter, Request, Cloudlet
+from Class.model import Model
+from Class.adapter import Adapter
+from Class.request import Request
+from Class.cloudlet import Cloudlet
 from utils import compute_pull_delays, compute_bts_volume, serve_and_cache_lru
 
 

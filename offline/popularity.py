@@ -6,10 +6,12 @@ the most requested ones on the cloudlets that requested them, ignoring the P2P
 topology and the submodular marginal gain of each placement.
 """
 
-from __future__ import annotations
 from collections import Counter
 import numpy as np
-from Class import Model, Adapter, Request, Cloudlet
+from Class.model import Model
+from Class.adapter import Adapter
+from Class.request import Request
+from Class.cloudlet import Cloudlet
 import config as C
 
 
@@ -52,9 +54,9 @@ def offline_popularity(
         need_adapter = not cl.has_adapter(mid, qt)
         size = 0.0
         if need_model:
-            size += models_dict[mid].size_gb
+            size += models_dict[mid].size
         if need_adapter:
-            size += adapters_dict[(mid, qt)].size_gb
+            size += adapters_dict[(mid, qt)].size
         if size <= 0 or size > budget[ci] or size > residual_registry:
             continue
         if need_model:

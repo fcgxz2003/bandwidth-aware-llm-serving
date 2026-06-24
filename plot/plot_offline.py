@@ -1,11 +1,10 @@
 """Plot the offline figures from results/offline_{scale,alpha}.json."""
 
-from __future__ import annotations
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bootstrap  # noqa: E402,F401  (configures sys.path for flat imports)
+import bootstrap  # configures sys.path for flat imports
 
 import expcommon as E
 import plotcommon as P

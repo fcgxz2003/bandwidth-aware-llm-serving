@@ -3,10 +3,12 @@ Cluster initialisation and request generation.
 Builds cloudlet topology and delay matrix from the EUA dataset.
 """
 
-from __future__ import annotations
 import csv
 import numpy as np
-from Class import Model, Adapter, Request, Cloudlet
+from Class.model import Model
+from Class.adapter import Adapter
+from Class.request import Request
+from Class.cloudlet import Cloudlet
 import config as C
 
 # ═══════════════════════ EUA dataset loading ══════════════════════════
@@ -83,7 +85,7 @@ def assign_users_to_cloudlets(
 
 def create_models() -> list[Model]:
     """Create foundation models from the real open-source model catalog."""
-    return [Model(id=j, size_gb=size) for j, (_, size) in enumerate(C.MODEL_CATALOG)]
+    return [Model(id=j, size=size) for j, (_, size) in enumerate(C.MODEL_CATALOG)]
 
 
 def create_adapters(models: list[Model], rng: np.random.Generator) -> list[Adapter]:
@@ -99,9 +101,9 @@ def create_adapters(models: list[Model], rng: np.random.Generator) -> list[Adapt
     for m in models:
         for q in range(C.NUM_SERVICE_TYPES):
             frac = rng.uniform(frac_lo, frac_hi)
-            size_gb = float(np.clip(m.size_gb * frac, clamp_lo, clamp_hi))
+            size = float(np.clip(m.size * frac, clamp_lo, clamp_hi))
             adapters.append(
-                Adapter(model_id=m.id, service_type=q, size_gb=round(size_gb, 4))
+                Adapter(model_id=m.id, service_type=q, size=round(size, 4))
             )
     return adapters
 
@@ -122,7 +124,7 @@ def create_cloudlets(
             rng = np.random.default_rng(0)
         storage_caps = rng.uniform(*C.CACHE_CAPACITY_RANGE_GB, size=num_cloudlets)
     return [
-        Cloudlet(cid=i, storage_cap_gb=float(storage_caps[i]))
+        Cloudlet(cid=i, storage_cap=float(storage_caps[i]))
         for i in range(num_cloudlets)
     ]
 

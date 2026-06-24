@@ -7,10 +7,9 @@ the simulation.
 Run:  python run_all.py [--days 2] [--seed 42] [--plot-only]
 """
 
-from __future__ import annotations
 import argparse
 
-import bootstrap  # noqa: F401  (configures sys.path for the exp/ and plot/ scripts)
+import bootstrap  # configures sys.path for the exp/ and plot/ scripts
 
 import exp_offline
 import exp_online

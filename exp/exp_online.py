@@ -6,13 +6,12 @@ Saves the per-slot time-series metrics of the daily tidal scenario:
 Run:  python exp_online.py [--days 2] [--seed 42]
 """
 
-from __future__ import annotations
 import os
 import sys
 import argparse
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bootstrap  # noqa: E402,F401  (configures sys.path for flat imports)
+import bootstrap  # configures sys.path for flat imports
 
 import numpy as np
 

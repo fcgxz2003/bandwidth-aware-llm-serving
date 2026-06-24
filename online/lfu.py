@@ -1,8 +1,10 @@
 """LFU baseline: reactive caching with frequency-based eviction."""
 
-from __future__ import annotations
 import numpy as np
-from Class import Model, Adapter, Request, Cloudlet
+from Class.model import Model
+from Class.adapter import Adapter
+from Class.request import Request
+from Class.cloudlet import Cloudlet
 from utils import compute_pull_delays, compute_bts_volume
 
 
@@ -50,23 +52,23 @@ def run_lfu(
                 hits += 1
 
             if not cl.has_model(req.model_id):
-                while cl.free_storage < m.size_gb and cl.cached_models:
+                while cl.free_storage < m.size and cl.cached_models:
                     worst = min(
                         cl.cached_models,
                         key=lambda mid: freq_model.get((cl.id, mid), 0),
                     )
                     cl.evict_model(worst)
-                if cl.free_storage >= m.size_gb:
+                if cl.free_storage >= m.size:
                     cl.cache_model(m)
 
             if not cl.has_adapter(req.model_id, req.service_type):
-                while cl.free_storage < adp.size_gb and cl.cached_adapters:
+                while cl.free_storage < adp.size and cl.cached_adapters:
                     worst = min(
                         cl.cached_adapters,
                         key=lambda k: freq_adapter.get((cl.id, *k), 0),
                     )
                     cl.evict_adapter(worst)
-                if cl.free_storage >= adp.size_gb:
+                if cl.free_storage >= adp.size:
                     cl.cache_adapter(adp)
 
         hit_rates.append(hits / len(reqs) if reqs else 0.0)

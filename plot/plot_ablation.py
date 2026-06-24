@@ -10,15 +10,14 @@ R-EWMA-only / D-EWMA-only / combined behaviour can be compared directly:
 The tidal demand is shaded behind both charts.
 """
 
-from __future__ import annotations
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bootstrap  # noqa: E402,F401  (configures sys.path for flat imports)
+import bootstrap  # configures sys.path for flat imports
 
-import expcommon as E  # noqa: E402
-import plotcommon as P  # noqa: E402
+import expcommon as E
+import plotcommon as P
 
 ON = os.path.join(P.PAPER_FIGS, "ablation")
 

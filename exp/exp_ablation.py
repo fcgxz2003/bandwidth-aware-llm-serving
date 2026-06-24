@@ -13,20 +13,20 @@ cumulative preheating gain. Saves results/ablation.json.
 Run:  python exp_ablation.py [--days 3] [--seed 42]
 """
 
-from __future__ import annotations
 import os
 import sys
 import argparse
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bootstrap  # noqa: E402,F401  (configures sys.path for flat imports)
+import bootstrap  # configures sys.path for flat imports
 
-import numpy as np  # noqa: E402
+import numpy as np
 
-import config as C  # noqa: E402
-import expcommon as E  # noqa: E402
-from setup import create_cloudlets  # noqa: E402
-from online import run_preheat, run_nocache  # noqa: E402
+import config as C
+import common.expcommon as E
+from setup import create_cloudlets
+from online.preheat import run_preheat
+from online.nocache import run_nocache
 
 ORDER = ["Recent", "Daily", "Combined"]
 THETAS = {"Recent": 1.0, "Daily": 0.0, "Combined": 0.5}

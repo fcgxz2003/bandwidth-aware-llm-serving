@@ -2,9 +2,11 @@
 Shared utility functions used by both offline and online algorithms.
 """
 
-from __future__ import annotations
 import numpy as np
-from Class import Model, Adapter, Request, Cloudlet
+from Class.model import Model
+from Class.adapter import Adapter
+from Class.request import Request
+from Class.cloudlet import Cloudlet
 
 
 def compute_pull_delays(
@@ -25,20 +27,20 @@ def compute_pull_delays(
 
     for k, req in enumerate(requests):
         m = models_dict[req.model_id]
-        best_m = delta[registry, req.home] * m.size_gb
+        best_m = delta[registry, req.home] * m.size
         for cl in cloudlets:
             if cl.has_model(req.model_id):
-                d = delta[cl.id, req.home] * m.size_gb
+                d = delta[cl.id, req.home] * m.size
                 if d < best_m:
                     best_m = d
         D_M[k] = best_m
 
         adp_key = (req.model_id, req.service_type)
         adp = adapters_dict[adp_key]
-        best_w = delta[registry, req.home] * adp.size_gb
+        best_w = delta[registry, req.home] * adp.size
         for cl in cloudlets:
             if cl.has_adapter(req.model_id, req.service_type):
-                d = delta[cl.id, req.home] * adp.size_gb
+                d = delta[cl.id, req.home] * adp.size
                 if d < best_w:
                     best_w = d
         D_W[k] = best_w
@@ -76,8 +78,8 @@ def compute_bts_volume(
         if adp_key not in cached_adapters:
             missing_adapters.add(adp_key)
 
-    bts = sum(models_dict[mid].size_gb for mid in missing_models)
-    bts += sum(adapters_dict[k].size_gb for k in missing_adapters)
+    bts = sum(models_dict[mid].size for mid in missing_models)
+    bts += sum(adapters_dict[k].size for k in missing_adapters)
     return float(bts)
 
 
@@ -107,15 +109,15 @@ def serve_and_cache_lru(
         if cl.has_model(req.model_id):
             last_used[(cl.id, ("M", req.model_id))] = clock
         else:
-            _evict_lru_until(cl, m.size_gb, last_used)
-            if cl.free_storage >= m.size_gb and cl.cache_model(m):
+            _evict_lru_until(cl, m.size, last_used)
+            if cl.free_storage >= m.size and cl.cache_model(m):
                 last_used[(cl.id, ("M", req.model_id))] = clock
 
         if cl.has_adapter(*adp_key):
             last_used[(cl.id, ("W", adp_key))] = clock
         else:
-            _evict_lru_until(cl, adp.size_gb, last_used)
-            if cl.free_storage >= adp.size_gb and cl.cache_adapter(adp):
+            _evict_lru_until(cl, adp.size, last_used)
+            if cl.free_storage >= adp.size and cl.cache_adapter(adp):
                 last_used[(cl.id, ("W", adp_key))] = clock
 
 

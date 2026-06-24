@@ -1,9 +1,11 @@
 """Offline algorithm (Algorithm 1): Lazy Marginal-Gain Density Greedy Co-Caching."""
 
-from __future__ import annotations
 import heapq
 import numpy as np
-from Class import Model, Adapter, Request, Cloudlet
+from Class.model import Model
+from Class.adapter import Adapter
+from Class.request import Request
+from Class.cloudlet import Cloudlet
 from utils import compute_pull_delays
 import config as C
 
@@ -118,18 +120,18 @@ def offline_greedy(
     candidates = []
     for cl in cloudlets:
         for mid, model in models_dict.items():
-            if not cl.has_model(mid) and model.size_gb <= budget[cl.id]:
+            if not cl.has_model(mid) and model.size <= budget[cl.id]:
                 candidates.append(("M", cl.id, mid, -1))
             for qt in range(C.NUM_SERVICE_TYPES):
                 adp_key = (mid, qt)
                 if adp_key in adapters_dict and not cl.has_adapter(mid, qt):
                     adp = adapters_dict[adp_key]
-                    if adp.size_gb <= budget[cl.id]:
+                    if adp.size <= budget[cl.id]:
                         candidates.append(("W", cl.id, mid, qt))
 
     def _marginal_gain(tag, ci, mid, qt):
         if tag == "M":
-            size = models_dict[mid].size_gb
+            size = models_dict[mid].size
             gain = 0.0
             for k in req_by_model.get(mid, []):
                 new_d = delta[ci, requests[k].home] * size
@@ -139,7 +141,7 @@ def offline_greedy(
             return gain, size
         else:
             adp = adapters_dict[(mid, qt)]
-            size = adp.size_gb
+            size = adp.size
             gain = 0.0
             for k in req_by_model.get(mid, []):
                 if requests[k].service_type == qt:
@@ -221,7 +223,7 @@ def offline_greedy(
             else:
                 if requests[k].service_type == qt:
                     adp = adapters_dict[(mid, qt)]
-                    new_d = delta[ci, requests[k].home] * adp.size_gb
+                    new_d = delta[ci, requests[k].home] * adp.size
                     if new_d < D_W[k]:
                         D_W[k] = new_d
 

@@ -7,13 +7,12 @@ Sweeps two dimensions on a cold, single-slot cluster and saves the metrics:
 Run:  python exp_offline.py [--seed 42]
 """
 
-from __future__ import annotations
 import os
 import sys
 import argparse
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bootstrap  # noqa: E402,F401  (configures sys.path for flat imports)
+import bootstrap  # configures sys.path for flat imports
 
 import config as C
 import expcommon as E

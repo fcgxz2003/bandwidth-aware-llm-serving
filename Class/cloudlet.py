@@ -1,16 +1,15 @@
 """Edge cloudlet cl_i."""
 
-from __future__ import annotations
-from .model import Model
-from .adapter import Adapter
+from Class.model import Model
+from Class.adapter import Adapter
 
 
 class Cloudlet:
-    """Edge cloudlet cl_i — disk cache only (no GPU VRAM)."""
+    """Edge cloudlet cl_i."""
 
-    def __init__(self, cid: int, storage_cap_gb: float):
+    def __init__(self, cid: int, storage_cap: float):
         self.id = cid
-        self.storage_cap = storage_cap_gb       # S(cl_i)
+        self.storage_cap = storage_cap       # S(cl_i)
 
         # cache state: x^t_{i,j}, y^t_{i,j,m}
         self.cached_models: set[int] = set()                    # model_id
@@ -35,7 +34,7 @@ class Cloudlet:
         if model.id in self.cached_models:
             return False
         self.cached_models.add(model.id)
-        self._model_sizes[model.id] = model.size_gb
+        self._model_sizes[model.id] = model.size
         return True
 
     def cache_adapter(self, adapter: Adapter) -> bool:
@@ -44,7 +43,7 @@ class Cloudlet:
         if key in self.cached_adapters:
             return False
         self.cached_adapters.add(key)
-        self._adapter_sizes[key] = adapter.size_gb
+        self._adapter_sizes[key] = adapter.size
         return True
 
     def evict_model(self, model_id: int):

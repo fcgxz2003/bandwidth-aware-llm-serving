@@ -1,8 +1,10 @@
 """Algorithm 2: PreHeat — online continuous preheating."""
 
-from __future__ import annotations
 import numpy as np
-from Class import Model, Adapter, Request, Cloudlet
+from Class.model import Model
+from Class.adapter import Adapter
+from Class.request import Request
+from Class.cloudlet import Cloudlet
 from utils import compute_pull_delays, compute_bts_volume, serve_and_cache_lru
 from offline.greedy import offline_greedy
 import config as C
@@ -155,8 +157,8 @@ def run_preheat(
             last_used[(ci, ("W", (mid, qt)))] = t
 
         # idle bandwidth consumed by preheating traffic this slot
-        slot_preheat = sum(models_dict[mid].size_gb for (_, mid) in mu)
-        slot_preheat += sum(adapters_dict[(mid, qt)].size_gb for (_, mid, qt) in nu)
+        slot_preheat = sum(models_dict[mid].size for (_, mid) in mu)
+        slot_preheat += sum(adapters_dict[(mid, qt)].size for (_, mid, qt) in nu)
         idle_bw.append(slot_preheat)
 
     return {

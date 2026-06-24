@@ -9,13 +9,12 @@ and save them as JSON; the plotting scripts (``plot_*.py``) only read those JSON
 files, so changing a figure's style never re-runs the simulation.
 """
 
-from __future__ import annotations
 import os
 import sys
 import json
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bootstrap  # noqa: E402,F401  (configures sys.path for flat imports)
+import bootstrap  # configures sys.path for flat imports
 
 import numpy as np
 
@@ -34,8 +33,13 @@ from setup import (
     generate_daily_trace,
 )
 from utils import compute_pull_delays, compute_bts_volume
-from offline import offline_greedy, offline_popularity
-from online import run_preheat, run_nocache, run_lfu, run_randpre, run_mab
+from offline.greedy import offline_greedy
+from offline.popularity import offline_popularity
+from online.preheat import run_preheat
+from online.nocache import run_nocache
+from online.lfu import run_lfu
+from online.randpre import run_randpre
+from online.mab import run_mab
 
 # ─────────────────────────── sweep grids ───────────────────────────
 SCALES = [100, 200, 500, 1000]
@@ -125,23 +129,23 @@ def rand_preheat(fx, cls, residual_peer, residual_registry):
             m = md[mid]
             if (
                 not cl.has_model(mid)
-                and m.size_gb <= budget
-                and m.size_gb <= residual_registry
+                and m.size <= budget
+                and m.size <= residual_registry
             ):
                 cl.cache_model(m)
-                budget -= m.size_gb
-                residual_registry -= m.size_gb
+                budget -= m.size
+                residual_registry -= m.size
         for idx in rng.permutation(len(adapter_keys)):
             ak = adapter_keys[idx]
             adp = ad[ak]
             if (
                 not cl.has_adapter(*ak)
-                and adp.size_gb <= budget
-                and adp.size_gb <= residual_registry
+                and adp.size <= budget
+                and adp.size <= residual_registry
             ):
                 cl.cache_adapter(adp)
-                budget -= adp.size_gb
-                residual_registry -= adp.size_gb
+                budget -= adp.size
+                residual_registry -= adp.size
 
 
 def offline_methods(fx, reqs):

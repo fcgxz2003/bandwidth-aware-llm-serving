@@ -5,7 +5,6 @@ produced by the experiment scripts and render the bar charts consumed by the
 paper. No simulation runs here, so restyling a figure is instant.
 """
 
-from __future__ import annotations
 import os
 
 import numpy as np

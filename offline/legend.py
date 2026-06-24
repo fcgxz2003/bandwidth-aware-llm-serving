@@ -7,7 +7,6 @@ Run with:  python -m offline.legend     (from the experiment/ directory)
        or:  python offline/legend.py
 """
 
-from __future__ import annotations
 import os
 
 import matplotlib
