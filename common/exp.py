@@ -1,12 +1,4 @@
 """Shared compute layer for the evaluation experiments.
-
-This module holds everything the *experiment* scripts need to run the
-simulator: the cluster fixture, the offline/online method runners, and small
-JSON helpers to persist results to ``experiment/results/``.
-
-The experiment scripts (``exp_offline.py``, ``exp_online.py``) compute metrics
-and save them as JSON; the plotting scripts (``plot_*.py``) only read those JSON
-files, so changing a figure's style never re-runs the simulation.
 """
 
 import os
@@ -51,7 +43,6 @@ OFFLINE_ORDER = ["P2P", "RandPre", "Popularity", "BACG"]
 ONLINE_ORDER = ["P2P", "RandPre", "LFU", "MAB", "DEWMA"]
 
 # ─────────────────────────── results I/O ───────────────────────────
-# common/ -> experiment root -> results/
 RESULTS_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results"
 )

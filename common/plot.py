@@ -1,8 +1,4 @@
 """Shared plotting layer for the evaluation figures.
-
-The plotting scripts (``plot_offline.py``, ``plot_online.py``) read the JSON
-produced by the experiment scripts and render the bar charts consumed by the
-paper. No simulation runs here, so restyling a figure is instant.
 """
 
 import os
@@ -94,9 +90,7 @@ def bars(
     plt.tick_params(labelsize=20)
     ax.set_xticks(ind)
     ax.set_xticklabels([str(x) for x in x_labels])
-    # Y-axis: top tick flush with the top edge (no empty gap), but sized so the
-    # tallest bar fills ~85% of the height. Equal-magnitude (a)/(b) subplots
-    # then round to the same top tick, keeping the pair symmetric.
+
     if yticks is not None:
         yticks = list(yticks)
     else:
@@ -232,10 +226,6 @@ def lines_broken(
         gridspec_kw={"height_ratios": list(height_ratios), "hspace": 0.28},
     )
 
-    # demand twin axes: ticks aligned to the bottom-panel gridlines. The bottom
-    # twin carries the shaded curve and the (round, aligned) tick labels; the
-    # top twin only reserves an identical right margin so both panels keep the
-    # same width and their right edges line up.
     if demand is not None:
         if demand_top is not None:
             n = max(1, len(yticks_bottom) - 1)
