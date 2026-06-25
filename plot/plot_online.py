@@ -9,8 +9,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import common.expcommon as E
-import common.plotcommon as P
+import common.exp as E
+import common.plot as P
 
 ON = os.path.join(P.PAPER_FIGS, "online")
 MARKERS = {"P2P": "o", "RandPre": "s", "LFU": "^", "MAB": "D", "DEWMA": "*"}

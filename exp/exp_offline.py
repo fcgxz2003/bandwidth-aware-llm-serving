@@ -14,7 +14,7 @@ import argparse
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import config as C
-import common.expcommon as E
+import common.exp as E
 
 
 def _sweep(fx, xs, alpha_for, n_for, seed):

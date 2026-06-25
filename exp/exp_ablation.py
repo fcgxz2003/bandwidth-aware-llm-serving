@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 
 import config as C
-import common.expcommon as E
+import common.exp as E
 from setup import create_cloudlets
 from online.dewma import run_dewma
 from online.nocache import run_nocache

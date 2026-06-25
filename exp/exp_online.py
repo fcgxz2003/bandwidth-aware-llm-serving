@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 
 import config as C
-import common.expcommon as E
+import common.exp as E
 
 
 def _timeseries(fx, trace_fn, num_slots, seed):
