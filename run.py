@@ -1,10 +1,4 @@
-"""One-shot orchestrator: run every experiment and render every figure.
-
-Day-to-day, run a single stage directly instead of this:
-  python exp/exp_offline.py    /  python plot/plot_offline.py
-  python exp/exp_online.py     /  python plot/plot_online.py
-  python exp/exp_ablation.py   /  python plot/plot_ablation.py
-
+"""
 Run:  python run.py [--days 2] [--seed 42] [--plot-only]
 """
 
@@ -31,7 +25,6 @@ def online(num_days, seed, plot_only):
 
 
 def ablation(plot_only):
-    # Ablation keeps its own tuned defaults (days/seed) from exp_ablation.main.
     if not plot_only:
         print("=== running ablation experiment ===")
         exp_ablation.main()
@@ -50,10 +43,6 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Run all experiments and plots")
     p.add_argument("--days", type=int, default=2)
     p.add_argument("--seed", type=int, default=42)
-    p.add_argument(
-        "--plot-only",
-        action="store_true",
-        help="skip simulation, only re-render figures from existing results/",
-    )
+    p.add_argument("--plot-only", action="store_true")
     args = p.parse_args()
     main(args.days, args.seed, args.plot_only)
