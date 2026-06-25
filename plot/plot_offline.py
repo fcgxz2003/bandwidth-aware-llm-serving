@@ -33,13 +33,9 @@ def _render(data, files):
     order = data["order"]
     labels = {k: k for k in order}
     for metric, fname in files.items():
-        # Pin the pulling-time axis to 0..500 (step 100) so (a)/(b) match.
         yticks = range(0, 501, 100) if metric == "pull" else None
-        # Pin the gain axis to 0..200 (step 50) so (a)/(b) match.
         if metric == "gain":
             yticks = range(0, 201, 50)
-        # P2P never preheats, so it has no preheating gain; show only the
-        # three preheating methods in the gain figures.
         metric_order = [a for a in order if a != "P2P"] if metric == "gain" else order
         P.bars(
             data["x"],

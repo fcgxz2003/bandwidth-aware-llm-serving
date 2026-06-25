@@ -1,6 +1,6 @@
 """Plot the online figures from results/online_timeseries.json.
 
-Produces the daily-scenario time-series charts: average pulling time, cumulative
+Include average pulling time, cumulative
 BTS data volume, and cumulative preheating gain.
 """
 
@@ -14,8 +14,6 @@ import common.plotcommon as P
 
 ON = os.path.join(P.PAPER_FIGS, "online")
 MARKERS = {"P2P": "o", "RandPre": "s", "LFU": "^", "MAB": "D", "DEWMA": "*"}
-# Saturated high-contrast colors for the time-series line charts (the pastel
-# bar palette is too light to read against the demand shading).
 LINE_COLORS = {
     "P2P": "#e8743b",
     "RandPre": "#8c8c8c",

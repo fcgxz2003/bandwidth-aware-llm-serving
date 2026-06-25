@@ -1,10 +1,7 @@
-"""Standalone generator for the offline figure legend.
+"""Offline figure legend.
 
 Writes ``paper/figs/evaluation/offline/legend.pdf`` shared by all offline
-bar charts (BACG is Algorithm 1).
-
-Run with:  python -m plot.legend     (from the experiment/ directory)
-       or:  python plot/legend.py
+bar charts.
 """
 
 import os

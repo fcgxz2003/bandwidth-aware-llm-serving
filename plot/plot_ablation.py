@@ -1,13 +1,11 @@
 """Plot the ablation figures from results/ablation.json.
 
-Single tidal scenario: contribution of DEWMA's two demand-estimation
-components. Each figure overlays the three variants on the same axes so the
+Compare the contribution of DEWMA's two demand estimation components. 
+Each figure overlays the three variants on the same axes so the
 R-EWMA-only / D-EWMA-only / combined behaviour can be compared directly:
 
   * online_ablation_bts.pdf  -- cumulative BTS data volume over time
   * online_ablation_gain.pdf -- cumulative preheating gain over time
-
-The tidal demand is shaded behind both charts.
 """
 
 import os
@@ -20,8 +18,6 @@ import common.plotcommon as P
 
 ON = os.path.join(P.PAPER_FIGS, "ablation")
 
-# Saturated, high-contrast palette consistent with the online time-series
-# charts. Combined (the full DEWMA) is the proposed blue.
 LINE_COLORS = {
     "R-EWMA only": "#e8743b",
     "D-EWMA only": "#d4b106",
