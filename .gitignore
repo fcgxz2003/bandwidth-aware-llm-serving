@@ -15,8 +15,5 @@ venv/
 # Temporary experiment artifacts
 _*.py
 
-# Generated experiment results (regenerate with run_all.py)
-results/
-
 # Local pre-edit backups
 backups_*/
