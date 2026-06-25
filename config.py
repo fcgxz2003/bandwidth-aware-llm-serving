@@ -14,14 +14,16 @@ EUA_USER_CSV = _os.path.join(
 )
 
 # ── Cluster topology ─────────────────────────────────────
-NUM_CLOUDLETS = 125  # |CL|, sampled from EUA dataset
-CLUSTER_BW_GBPS = 1.0  # cluster link bandwidth (Gbps)
-REGISTRY_BW_GBPS = 0.24  # registry uplink bandwidth (Gbps)
+NUM_CLOUDLETS = 125  # |CL|
+CLUSTER_BW_GBPS = 1.0  # cloudlet bandwidth (Gbps)
+REGISTRY_BW_GBPS = 0.24  # registry bandwidth (Gbps)
+
 # ── Foundation models & adapters ─────────────────────────
 # Real open-source LLMs spanning the Qwen, LLaMA, Gemma, Mistral, Phi, Yi and
-# CodeLlama families. Sizes are the actual on-disk footprint of the Q4_K_M GGUF
-# weights distributed by Ollama (default tag download size, https://ollama.com/
-# library), covering the 0.6B-34B edge-deployable range -> 0.5GB-20GB.
+# CodeLlama families.
+# Q4_K_M GGUF
+# adapters distribution size, https://ollama.com/library,
+# covering the 0.6B-34B edge-deployable range -> 0.5GB-20GB.
 MODEL_CATALOG = [
     # Qwen family
     ("Qwen2.5-0.5B", 0.5),
@@ -61,23 +63,16 @@ MODEL_CATALOG = [
     # Yi family
     ("Yi-34B", 19.0),
 ]
+
 NUM_FOUNDATION_MODELS = len(MODEL_CATALOG)  # |L| = 30
 NUM_SERVICE_TYPES = 10  # |Q|: task-specific fine-tuned adapters per model
-# Adapter (LoRA/QLoRA) sizes follow real task-specific adapters such as the
-# Predibase "LoRA Land" collection (27 task adapters on Mistral-7B): a rank-16
-# adapter is ~13.6 MB (https://huggingface.co/predibase/magicoder), while
-# higher-rank adapters targeting all linear layers on larger bases reach a few
-# hundred MB. A LoRA's footprint scales with the base model's hidden dimension
-# and layer count, so we size each (model, task) adapter as a fraction of its
-# base model: adapter_gb = base_model_gb * f, with f drawn per task from the
-# range below (different ranks / target modules). A larger base model thus
-# yields proportionally larger adapters.
+
 ADAPTER_SIZE_FRAC_RANGE = (0.01, 0.04)  # adapter footprint as fraction of base model
 ADAPTER_SIZE_RANGE_GB = (0.005, 0.8)  # absolute clamp on adapter size (GB)
 
 # ── Request generation ───────────────────────────────────
 ZIPF_ALPHA = 0.7  # Zipf skewness for model popularity
-PEAK_VALLEY_RATIO = 40  # daily peak / valley request ratio
+PEAK_VALLEY_RATIO = 70  # daily peak / valley request ratio
 MEAN_REQUESTS_PER_SLOT = 100  # baseline mean requests per slot
 
 # ── Storage ────────────────────────────────
@@ -87,7 +82,7 @@ CACHE_CAPACITY_RANGE_GB = (16, 48)  # per-cloudlet cache capacity range (GB)
 OMEGA_R = 0.3  # R-EWMA smoothing factor
 OMEGA_D = 0.3  # D-EWMA smoothing factor
 THETA = 0.5  # blend weight for demand estimate
-TIE_SEED = 6  # fixed seed for the greedy's equal-density tie-break (reproducibility)
+TIE_SEED = 6  # fixed seed for the greedy's equal-density tie-break
 H_PERIODS = 48  # daily periods for D-EWMA
 SLOT_MINUTES = 30  # slot length (minutes)
 SLOTS_PER_DAY = 24 * 60 // SLOT_MINUTES  # 48

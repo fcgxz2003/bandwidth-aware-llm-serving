@@ -9,11 +9,11 @@ class Cloudlet:
 
     def __init__(self, cid: int, storage_cap: float):
         self.id = cid
-        self.storage_cap = storage_cap       # S(cl_i)
+        self.storage_cap = storage_cap  # S(cl_i)
 
         # cache state: x^t_{i,j}, y^t_{i,j,m}
-        self.cached_models: set[int] = set()                    # model_id
-        self.cached_adapters: set[tuple[int, int]] = set()      # (model_id, service_type)
+        self.cached_models: set[int] = set()  # model_id
+        self.cached_adapters: set[tuple[int, int]] = set()  # (model_id, service_type)
 
         # track sizes for eviction accounting
         self._model_sizes: dict[int, float] = {}
@@ -47,12 +47,7 @@ class Cloudlet:
         return True
 
     def evict_model(self, model_id: int):
-        """Evict a foundation model along with its co-cached adapters.
-
-        Under the co-caching design an adapter is only useful when its
-        foundation model is co-located on the same cloudlet, so evicting the
-        model also releases all of its adapters to reclaim their storage.
-        """
+        """Evict a foundation model along with its co-cached adapters."""
         if model_id not in self.cached_models:
             return
         self.cached_models.discard(model_id)
