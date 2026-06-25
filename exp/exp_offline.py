@@ -12,10 +12,9 @@ import sys
 import argparse
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bootstrap  # configures sys.path for flat imports
 
 import config as C
-import expcommon as E
+import common.expcommon as E
 
 
 def _sweep(fx, xs, alpha_for, n_for, seed):

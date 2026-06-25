@@ -9,12 +9,8 @@ Run:  python run_all.py [--days 2] [--seed 42] [--plot-only]
 
 import argparse
 
-import bootstrap  # configures sys.path for the exp/ and plot/ scripts
-
-import exp_offline
-import exp_online
-import plot_offline
-import plot_online
+from exp import exp_offline, exp_online
+from plot import plot_offline, plot_online
 
 
 def main(num_days=2, seed=42, plot_only=False):

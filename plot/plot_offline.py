@@ -4,10 +4,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bootstrap  # configures sys.path for flat imports
 
-import expcommon as E
-import plotcommon as P
+import common.expcommon as E
+import common.plotcommon as P
 
 OFF = os.path.join(P.PAPER_FIGS, "offline")
 COLORS = {"P2P": P.C4, "RandPre": P.C3, "Popularity": P.C2, "BACG": P.C1}

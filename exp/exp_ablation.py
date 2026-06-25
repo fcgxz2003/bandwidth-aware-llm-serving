@@ -18,7 +18,6 @@ import sys
 import argparse
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bootstrap  # configures sys.path for flat imports
 
 import numpy as np
 

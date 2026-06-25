@@ -14,10 +14,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import bootstrap  # configures sys.path for flat imports
 
-import expcommon as E
-import plotcommon as P
+import common.expcommon as E
+import common.plotcommon as P
 
 ON = os.path.join(P.PAPER_FIGS, "ablation")
 
