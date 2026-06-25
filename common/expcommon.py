@@ -32,6 +32,8 @@ from setup import (
     generate_daily_trace,
 )
 from utils import compute_pulling_delays, compute_bts_volume
+from offline.p2p import offline_p2p
+from offline.randpre import offline_randpre
 from offline.greedy import offline_greedy
 from offline.popularity import offline_popularity
 from online.preheat import run_preheat
@@ -113,40 +115,6 @@ def one_slot(fx, n_requests, alpha, seed):
     return reqs[:n_requests] if len(reqs) > n_requests else reqs
 
 
-def rand_preheat(fx, cls, residual_peer, residual_registry):
-    """One-shot random preheating used by the RandPre offline baseline."""
-    md, ad = fx["models_dict"], fx["adapters_dict"]
-    rng = fx["rng"]
-    model_ids = list(md.keys())
-    adapter_keys = list(ad.keys())
-    for cl in cls:
-        if residual_registry <= 0:
-            break
-        budget = min(residual_peer[cl.id], residual_registry, cl.free_storage)
-        for idx in rng.permutation(len(model_ids)):
-            mid = model_ids[idx]
-            m = md[mid]
-            if (
-                not cl.has_model(mid)
-                and m.size <= budget
-                and m.size <= residual_registry
-            ):
-                cl.cache_model(m)
-                budget -= m.size
-                residual_registry -= m.size
-        for idx in rng.permutation(len(adapter_keys)):
-            ak = adapter_keys[idx]
-            adp = ad[ak]
-            if (
-                not cl.has_adapter(*ak)
-                and adp.size <= budget
-                and adp.size <= residual_registry
-            ):
-                cl.cache_adapter(adp)
-                budget -= adp.size
-                residual_registry -= adp.size
-
-
 def offline_methods(fx, reqs):
     """Return per-method ``(gain_ms, avg_pull_ms, bts_gb)`` on a cold cluster."""
     md, ad, delta = fx["models_dict"], fx["adapters_dict"], fx["delta"]
@@ -159,9 +127,9 @@ def offline_methods(fx, reqs):
         before = float((D_M0 + D_W0).sum())
         residual_peer = np.full(fx["num_cl"], slot_bw)
         if name == "P2P":
-            pass
+            offline_p2p(reqs, cls, md, ad)
         elif name == "RandPre":
-            rand_preheat(fx, cls, residual_peer, registry_bw)
+            offline_randpre(cls, md, ad, fx["rng"], residual_peer, registry_bw)
         elif name == "Popularity":
             offline_popularity(reqs, cls, md, ad, delta, residual_peer, registry_bw)
         else:
