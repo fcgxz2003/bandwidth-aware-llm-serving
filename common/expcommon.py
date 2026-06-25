@@ -31,7 +31,7 @@ from setup import (
     generate_requests_for_slot,
     generate_daily_trace,
 )
-from utils import compute_pull_delays, compute_bts_volume
+from utils import compute_pulling_delays, compute_bts_volume
 from offline.greedy import offline_greedy
 from offline.popularity import offline_popularity
 from online.preheat import run_preheat
@@ -155,7 +155,7 @@ def offline_methods(fx, reqs):
     out = {}
     for name in OFFLINE_ORDER:
         cls = create_cloudlets(fx["num_cl"], storage_caps=fx["storage_caps"])
-        D_M0, D_W0 = compute_pull_delays(reqs, cls, md, ad, delta)
+        D_M0, D_W0 = compute_pulling_delays(reqs, cls, md, ad, delta)
         before = float((D_M0 + D_W0).sum())
         residual_peer = np.full(fx["num_cl"], slot_bw)
         if name == "P2P":
@@ -166,7 +166,7 @@ def offline_methods(fx, reqs):
             offline_popularity(reqs, cls, md, ad, delta, residual_peer, registry_bw)
         else:
             offline_greedy(reqs, cls, md, ad, delta, residual_peer, registry_bw)
-        D_M1, D_W1 = compute_pull_delays(reqs, cls, md, ad, delta)
+        D_M1, D_W1 = compute_pulling_delays(reqs, cls, md, ad, delta)
         after = float((D_M1 + D_W1).sum())
         out[name] = (
             before - after,

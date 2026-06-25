@@ -9,14 +9,14 @@ from Class.request import Request
 from Class.cloudlet import Cloudlet
 
 
-def compute_pull_delays(
+def compute_pulling_delays(
     requests: list[Request],
     cloudlets: list[Cloudlet],
     models_dict: dict[int, Model],
     adapters_dict: dict[tuple[int, int], Adapter],
     delta: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Compute per-request pull delays D^M_k and D^W_k under current cache state.
+    """Compute pulling delays D^M_k and D^W_k under current cache state.
 
     Returns two arrays of length len(requests).
     """
@@ -54,14 +54,10 @@ def compute_bts_volume(
     models_dict: dict[int, Model],
     adapters_dict: dict[tuple[int, int], Adapter],
 ) -> float:
-    """Back-to-source (BTS) data volume for one slot, counted consistently.
+    """BTS data volume for a time slot.
 
     A foundation model or adapter triggers a registry pull only when it is not
-    held by *any* cloudlet in the cluster at the start of the slot. The first
-    request fetches it from the registry; subsequent requests for the same item
-    are served peer-to-peer. Hence each cluster-wide-missing item is counted
-    exactly once, regardless of how many requests reference it. This single
-    helper is shared by every method so the BTS metric is defined identically.
+    pulled by any cloudlet in the cluster.
     """
     cached_models: set[int] = set()
     cached_adapters: set[tuple[int, int]] = set()
@@ -95,10 +91,8 @@ def serve_and_cache_lru(
 
     Models the on-demand P2P baseline: after a request pulls its missing
     foundation model and adapter, the content is cached at the requesting
-    (home) cloudlet so that nearby peers can later fetch it peer-to-peer. When
-    storage is tight, the least-recently-used cached item is evicted. *last_used*
-    maps (cloudlet_id, ('M', model_id) | ('W', key)) -> last access time and is
-    maintained across slots by the caller.
+    (home) cloudlet so that nearby peers can later pull it P2P. When
+    storage is tight, the least recently used cached item is evicted.
     """
     for req in requests:
         cl = cloudlets[req.home]
@@ -122,7 +116,7 @@ def serve_and_cache_lru(
 
 
 def _evict_lru_until(cl: Cloudlet, size_needed: float, last_used: dict) -> None:
-    """Evict least-recently-used items from *cl* until *size_needed* fits."""
+    """Evict least recently used items from cl."""
     while cl.free_storage < size_needed and (cl.cached_models or cl.cached_adapters):
         candidates = [
             (last_used.get((cl.id, ("M", mid)), -1), "M", mid)

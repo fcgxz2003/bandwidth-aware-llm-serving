@@ -5,7 +5,7 @@ from Class.model import Model
 from Class.adapter import Adapter
 from Class.request import Request
 from Class.cloudlet import Cloudlet
-from utils import compute_pull_delays, compute_bts_volume
+from utils import compute_pulling_delays, compute_bts_volume
 
 
 def run_lfu(
@@ -23,7 +23,7 @@ def run_lfu(
     pull_times, hit_rates, bts_volumes, idle_bw = [], [], [], []
 
     for reqs in all_requests:
-        D_M, D_W = compute_pull_delays(
+        D_M, D_W = compute_pulling_delays(
             reqs, cloudlets, models_dict, adapters_dict, delta
         )
         pull_times.append(float((D_M + D_W).mean()) if reqs else 0.0)

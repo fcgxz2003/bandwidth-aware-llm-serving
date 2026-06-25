@@ -6,7 +6,7 @@ from Class.model import Model
 from Class.adapter import Adapter
 from Class.request import Request
 from Class.cloudlet import Cloudlet
-from utils import compute_pull_delays
+from utils import compute_pulling_delays
 import config as C
 
 # ── Marginal-gain-density cutoff (Algorithm 1, optional) ──
@@ -57,7 +57,7 @@ def offline_greedy(
         residual_registry = C.REGISTRY_SLOT_GB
 
     # ── Step 1: compute initial D^M_k, D^W_k ──
-    D_M, D_W = compute_pull_delays(
+    D_M, D_W = compute_pulling_delays(
         requests, cloudlets, models_dict, adapters_dict, delta
     )
 

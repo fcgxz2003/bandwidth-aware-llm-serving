@@ -12,7 +12,7 @@ from Class.model import Model
 from Class.adapter import Adapter
 from Class.request import Request
 from Class.cloudlet import Cloudlet
-from utils import compute_pull_delays, compute_bts_volume, serve_and_cache_lru
+from utils import compute_pulling_delays, compute_bts_volume, serve_and_cache_lru
 import config as C
 
 
@@ -55,7 +55,7 @@ def run_mab(
         reqs = all_requests[t]
 
         # ── current-slot metrics under existing cache ──
-        D_M, D_W = compute_pull_delays(
+        D_M, D_W = compute_pulling_delays(
             reqs, cloudlets, models_dict, adapters_dict, delta
         )
         pull_times.append(float((D_M + D_W).mean()) if reqs else 0.0)
