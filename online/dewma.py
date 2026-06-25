@@ -82,9 +82,8 @@ def run_dewma(
 ) -> dict:
     """Run DEWMA online continuous preheating.
 
-    ``theta`` overrides the global R-EWMA/D-EWMA blend weight for ablation
-    runs (theta=1 -> R-EWMA only, theta=0 -> D-EWMA only); ``None`` keeps the
-    configured default.
+    ``theta`` sets the R-EWMA/D-EWMA blend weight (theta=1 -> R-EWMA only,
+    theta=0 -> D-EWMA only); ``None`` keeps the configured default ``C.THETA``.
     """
     T = len(all_requests)
     num_cl = len(cloudlets)
