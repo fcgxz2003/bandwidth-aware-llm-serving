@@ -29,8 +29,7 @@ class DemandEstimator:
         self.lambda_R = np.zeros(shape)
         self.lambda_D = np.zeros((C.H_PERIODS, *shape))
         self._shape = shape
-        # blend weight between R-EWMA and D-EWMA; defaults to the global config
-        # so the production path is unchanged, but the ablation can override it.
+        # blend weight between R-EWMA and D-EWMA
         self.theta = C.THETA if theta is None else theta
 
     def update(self, slot: int, counts: np.ndarray):
@@ -114,9 +113,8 @@ def run_dewma(
             compute_bts_volume(reqs, cloudlets, models_dict, adapters_dict)
         )
 
-        # pulled content enters the local cache (main.tex: "both pulled and
-        # preheated content enter the local cache"), so the served foundation
-        # models and adapters are retained for subsequent peer-to-peer reuse.
+        # pulled content enters the local cache, so the served foundation
+        # models and adapters are retained for subsequent P2P reuse.
         serve_and_cache_lru(reqs, cloudlets, models_dict, adapters_dict, last_used, t)
 
         # demand estimation
@@ -130,8 +128,9 @@ def run_dewma(
             idle_bw.append(0.0)
             continue
 
-        # invoke offline greedy; storage-tight eviction of lowest-demand
-        # cached content (Algorithm 2, line 6) is handled inside the greedy
+        # invoke offline greedy
+        # storage tight eviction of lowest-demand
+        # cached content is handled inside the greedy
         residual_peer = np.full(num_cl, slot_bw)
         mu, nu = offline_bacg(
             predicted,
@@ -144,7 +143,7 @@ def run_dewma(
             demand=lam,
         )
 
-        # preheated content is freshly useful: refresh its recency so the LRU
+        # preheated content is freshly useful, refresh its recency so the LRU
         # bookkeeping does not evict it before the predicted demand arrives.
         for ci, mid in mu:
             last_used[(ci, ("M", mid))] = t
