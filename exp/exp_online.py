@@ -1,7 +1,7 @@
 """Online experiment: DEWMA vs. baselines under tidal traffic.
 
-Saves the per-slot time-series metrics of the daily tidal scenario:
-  * results/online_timeseries.json   (per-slot pull, bts for every method)
+Saves the each slot time metrics of the tidal scenario:
+  * results/online_timeseries.json   (each time slot pull, bts for every method)
 
 Run:  python exp_online.py [--days 2] [--seed 42]
 """
@@ -19,12 +19,7 @@ import common.expcommon as E
 
 
 def _timeseries(fx, trace_fn, num_slots, seed):
-    """Per-slot pulling time of every method on a single tidal trace.
-
-    Keeps the full per-slot trajectory (instead of aggregating it) so the
-    figure can show how the preheating gain evolves over time relative to the
-    demand peaks and valleys.
-    """
+    """Each time slot pulling time of every method on tidal trace."""
     order = E.ONLINE_ORDER
     rng = np.random.default_rng(seed)
     trace = trace_fn(fx, rng, num_slots, C.MEAN_REQUESTS_PER_SLOT)
