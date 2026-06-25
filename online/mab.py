@@ -3,8 +3,7 @@
 Treats each candidate (cloudlet, foundation-model) placement as an arm of a
 multi-armed bandit and explores preheating actions to gradually learn their
 rewards from observed feedback, instead of directly estimating the demand from
-history. Adapters of a preheated model are co-cached for the service types that
-have been observed for that model.
+history.
 """
 
 import numpy as np

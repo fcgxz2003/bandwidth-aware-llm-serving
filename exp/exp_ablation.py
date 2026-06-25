@@ -24,7 +24,7 @@ import numpy as np
 import config as C
 import common.expcommon as E
 from setup import create_cloudlets
-from online.preheat import run_preheat
+from online.dewma import run_dewma
 from online.nocache import run_nocache
 
 ORDER = ["Recent", "Daily", "Combined"]
@@ -50,7 +50,7 @@ def main(num_days: int = 3, seed: int = 53):
     pull, bts, summary = {}, {}, {}
     for name in ORDER:
         cls = create_cloudlets(fx["num_cl"], storage_caps=fx["storage_caps"])
-        res = run_preheat(trace, cls, md, ad, delta, theta=THETAS[name])
+        res = run_dewma(trace, cls, md, ad, delta, theta=THETAS[name])
         pull[name] = [float(v) for v in res["pull_times"]]
         bts[name] = [float(v) for v in res["bts_volumes"]]
         summary[name] = {

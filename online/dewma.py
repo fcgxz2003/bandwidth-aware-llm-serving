@@ -1,4 +1,4 @@
-"""Algorithm 2: PreHeat — online continuous preheating."""
+"""DEWMA — online continuous preheating."""
 
 import numpy as np
 from Class.model import Model
@@ -55,11 +55,7 @@ def _build_predicted_requests(lam, rng):
     """Turn the fractional demand estimate into a predicted request set.
 
     Each cell holds the expected number of requests for (cloudlet, model,
-    service) in the next slot. We use unbiased stochastic rounding —
-    floor(val) deterministic copies plus one extra with probability equal to
-    the fractional part — so that the predicted set size matches the expected
-    total demand instead of collapsing to zero (nearest rounding) or exploding
-    to one-per-nonzero-cell (ceiling).
+    service) in the next slot.
     """
     predicted = []
     it = np.nditer(lam, flags=["multi_index"])
@@ -76,7 +72,7 @@ def _build_predicted_requests(lam, rng):
     return predicted
 
 
-def run_preheat(
+def run_dewma(
     all_requests: list[list[Request]],
     cloudlets: list[Cloudlet],
     models_dict: dict[int, Model],
@@ -84,7 +80,7 @@ def run_preheat(
     delta: np.ndarray,
     theta: float | None = None,
 ) -> dict:
-    """Run Algorithm 2: online continuous preheating.
+    """Run DEWMA online continuous preheating.
 
     ``theta`` overrides the global R-EWMA/D-EWMA blend weight for ablation
     runs (theta=1 -> R-EWMA only, theta=0 -> D-EWMA only); ``None`` keeps the

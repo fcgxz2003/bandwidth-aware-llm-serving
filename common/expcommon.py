@@ -36,7 +36,7 @@ from offline.p2p import offline_p2p
 from offline.randpre import offline_randpre
 from offline.bacg import offline_bacg
 from offline.popularity import offline_popularity
-from online.preheat import run_preheat
+from online.dewma import run_dewma
 from online.nocache import run_nocache
 from online.lfu import run_lfu
 from online.randpre import run_randpre
@@ -153,7 +153,7 @@ def run_online_methods(fx, trace):
         "RandPre": lambda c: run_randpre(trace, c, md, ad, delta, fx["rng"]),
         "LFU": lambda c: run_lfu(trace, c, md, ad, delta),
         "MAB": lambda c: run_mab(trace, c, md, ad, delta),
-        "DEWMA": lambda c: run_preheat(trace, c, md, ad, delta),
+        "DEWMA": lambda c: run_dewma(trace, c, md, ad, delta),
     }
     out = {}
     for name, fn in runners.items():

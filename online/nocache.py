@@ -3,7 +3,7 @@
 Traditional P2P distribution: a request pulls its missing foundation model and
 adapter from the central registry, then caches the pulled content at its home
 cloudlet so that nearby peers can later fetch it peer-to-peer. No preheating is
-performed and storage is reclaimed with least-recently-used (LRU) eviction.
+performed and storage is reclaimed with LRU eviction.
 """
 
 import numpy as np
