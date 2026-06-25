@@ -2,8 +2,7 @@
 
 Greedily fills each cloudlet's residual data volume with randomly ordered
 foundation models and adapters, ignoring both the request distribution and the
-P2P topology. Serves as a naive proactive baseline against which demand- and
-topology-aware preheating (Popularity, BACG) is compared.
+P2P topology.
 """
 
 import numpy as np
@@ -21,7 +20,7 @@ def offline_randpre(
     residual_peer: np.ndarray | None = None,
     residual_registry: float | None = None,
 ) -> None:
-    """One-shot random preheating across the cluster (modifies cloudlets in-place)."""
+    """random preheating across the cluster."""
     num_cl = len(cloudlets)
     if residual_peer is None:
         residual_peer = np.full(num_cl, C.CLUSTER_SLOT_GB)
