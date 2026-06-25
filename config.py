@@ -72,7 +72,7 @@ ADAPTER_SIZE_RANGE_GB = (0.005, 0.8)  # absolute clamp on adapter size (GB)
 
 # ── Request generation ───────────────────────────────────
 ZIPF_ALPHA = 0.7  # Zipf skewness for model popularity
-PEAK_VALLEY_RATIO = 70  # daily peak / valley request ratio
+PEAK_VALLEY_RATIO = 40  # daily peak / valley request ratio
 MEAN_REQUESTS_PER_SLOT = 100  # baseline mean requests per slot
 
 # ── Storage ────────────────────────────────
