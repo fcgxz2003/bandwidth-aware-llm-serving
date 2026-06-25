@@ -3,8 +3,8 @@
 Writes ``paper/figs/evaluation/offline/legend.pdf`` shared by all offline
 bar charts (BACG is Algorithm 1).
 
-Run with:  python -m offline.legend     (from the experiment/ directory)
-       or:  python offline/legend.py
+Run with:  python -m plot.legend     (from the experiment/ directory)
+       or:  python plot/legend.py
 """
 
 import os
