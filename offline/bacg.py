@@ -9,10 +9,9 @@ from Class.cloudlet import Cloudlet
 from utils import compute_pulling_delays
 import config as C
 
-# ── Marginal-gain-density cutoff (Algorithm 1, optional) ──
-# When > 0, the greedy stops preheating once the best remaining candidate's
-# marginal-gain density (delay reduction per GB pulled) falls below this
-# threshold, so scarce uplink budget is not spent on low-value content.
+# ── Marginal gain density cutoff (optional) ──
+# When > 0, the greedy stops preheating once the marginal-gain density
+# falls below this threshold.
 DENSITY_CUTOFF = 0.0
 
 
@@ -31,17 +30,13 @@ def offline_bacg(
     Parameters
     ----------
     requests : predicted request set R_{t+1}.
-    cloudlets : current cache state (modified in-place).
+    cloudlets : current cache state.
     models_dict : model_id -> Model.
     adapters_dict : (model_id, service_type) -> Adapter.
     delta : delay matrix of shape (|CL|+1, |CL|).
-    residual_peer : residual data budget per cloudlet (GB); default unlimited.
-    residual_registry : residual registry data budget (GB); default unlimited.
-    demand : optional (|CL|, |L|, |Q|) estimated-demand array. When given, a
-        candidate that does not fit in the free storage of its cloudlet may
-        evict cached content with strictly lower estimated demand to make room
-        (Algorithm 2, line 6). When None (offline cold start), no eviction is
-        performed and a candidate is simply skipped if it does not fit.
+    residual_peer : residual data budget per cloudlet (GB).
+    residual_registry : residual registry data budget (GB).
+    demand : optional (|CL|, |L|, |Q|) estimated-demand array.
 
     Returns
     -------
@@ -61,14 +56,14 @@ def offline_bacg(
         requests, cloudlets, models_dict, adapters_dict, delta
     )
 
-    # ── Step 2: per-cloudlet transfer budget b_i(t) ──
+    # ── Step 2: compute each cloudlet transfer budget b_i(t) ──
     # Storage is enforced separately (via free_storage + eviction) so that the
-    # budget here reflects only the residual data volumes (Constraints P1.1/P1.2).
+    # budget here reflects only the residual data volumes.
     budget = np.array(
         [min(residual_peer[cl.id], residual_registry) for cl in cloudlets], dtype=float
     )
 
-    # ── demand lookups for capacity-driven eviction (Algorithm 2, line 6) ──
+    # ── demand lookups for capacity-driven eviction ──
     def _model_demand(ci, mid):
         return float(demand[ci, mid, :].sum()) if demand is not None else 0.0
 
@@ -76,12 +71,11 @@ def offline_bacg(
         return float(demand[ci, mid, qt]) if demand is not None else 0.0
 
     def _make_room(cl, size, incoming_demand, protected):
-        """Evict cached items with strictly lower demand until *size* fits.
+        """Evict cached items with strictly lower demand until size fits.
 
-        Only items whose estimated demand is below *incoming_demand* and that
-        were not placed in this same round (*protected*) may be evicted.
-        Returns True if enough room was freed, False otherwise (cache left
-        unchanged in that case).
+        Only items whose estimated demand is below incoming_demand and that
+        were not placed in this same round (protected) may be evicted.
+        Returns True if enough room was freed, False otherwise.
         """
         if size <= cl.free_storage:
             return True
@@ -153,10 +147,7 @@ def offline_bacg(
 
     # max-heap via negated density. Equal-density candidates are extremely
     # common because the delay matrix is a 3-level step function, so the
-    # tie-break must be deterministic for reproducibility. We assign each
-    # candidate a fixed-seed random key (carried through the heap so a lazily
-    # re-inserted candidate keeps the same key) instead of id(cand), whose
-    # value depended on the run-time memory layout.
+    # tie-break must be deterministic for reproducibility.
     tie_rng = np.random.default_rng(C.TIE_SEED)
     tie_keys = tie_rng.random(len(candidates))
     heap = []
