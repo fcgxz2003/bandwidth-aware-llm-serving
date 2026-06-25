@@ -2,12 +2,13 @@
 
 ## Offline Algorithm: BACG (Bandwidth-Aware Co-caching Greedy)
 
-`offline/bacg.py` It greedily preheats foundation
+`offline/bacg.py` greedily preheats foundation
 models and adapters by repeatedly placing the candidate with the highest
 marginal-gain density (delay saved per GB), exploiting submodularity and lazy
 evaluation for efficiency.
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '9px'}, 'flowchart': {'nodeSpacing': 12, 'rankSpacing': 14}}}%%
 flowchart TD
     A[Step 3: enumerate candidates = content x cloudlet] --> B[Compute density = gain / size for each candidate]
     B --> C[Push into max-heap]
@@ -27,13 +28,13 @@ flowchart TD
 
 ## Online Algorithm: DEWMA (Dual-EWMA continuous preheating)
 
-`online/dewma.py` continuously preheats foundation models and adapters slot by
-slot. For each time slot it serves the current requests, updates a dual-EWMA
-demand estimator (a short-term R-EWMA blended with a daily-periodic D-EWMA),
+`online/dewma.py` continuously preheats foundation models and adapters. For each time slot it serves the current requests, updates a dual-EWMA
+demand estimator,
 predicts the next slot's demand, and invokes the offline BACG greedy under the
 current slot's idle-bandwidth budget to decide what to preheat.
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '9px'}, 'flowchart': {'nodeSpacing': 12, 'rankSpacing': 14}}}%%
 flowchart TD
     A[Slot t: incoming requests] --> B[Compute current-slot metrics: pull delay, hit rate, BTS]
     B --> C[Serve & cache served content via LRU]
