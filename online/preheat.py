@@ -6,7 +6,7 @@ from Class.adapter import Adapter
 from Class.request import Request
 from Class.cloudlet import Cloudlet
 from utils import compute_pulling_delays, compute_bts_volume, serve_and_cache_lru
-from offline.greedy import offline_greedy
+from offline.bacg import offline_bacg
 import config as C
 
 
@@ -138,7 +138,7 @@ def run_preheat(
         # invoke offline greedy; storage-tight eviction of lowest-demand
         # cached content (Algorithm 2, line 6) is handled inside the greedy
         residual_peer = np.full(num_cl, slot_bw)
-        mu, nu = offline_greedy(
+        mu, nu = offline_bacg(
             predicted,
             cloudlets,
             models_dict,

@@ -34,7 +34,7 @@ from setup import (
 from utils import compute_pulling_delays, compute_bts_volume
 from offline.p2p import offline_p2p
 from offline.randpre import offline_randpre
-from offline.greedy import offline_greedy
+from offline.bacg import offline_bacg
 from offline.popularity import offline_popularity
 from online.preheat import run_preheat
 from online.nocache import run_nocache
@@ -133,7 +133,7 @@ def offline_methods(fx, reqs):
         elif name == "Popularity":
             offline_popularity(reqs, cls, md, ad, delta, residual_peer, registry_bw)
         else:
-            offline_greedy(reqs, cls, md, ad, delta, residual_peer, registry_bw)
+            offline_bacg(reqs, cls, md, ad, delta, residual_peer, registry_bw)
         D_M1, D_W1 = compute_pulling_delays(reqs, cls, md, ad, delta)
         after = float((D_M1 + D_W1).sum())
         out[name] = (

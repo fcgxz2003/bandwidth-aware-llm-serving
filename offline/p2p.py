@@ -1,9 +1,8 @@
 """On-demand P2P offline baseline.
 
-The reference scheme performs no proactive preheating: every cloudlet starts
+The reference scheme performs no proactive preheating, every cloudlet starts
 cold and content is only pulled reactively (peer-to-peer or from the registry)
-when a request needs it. This module exposes that no-op placement explicitly so
-that every offline method is dispatched the same way.
+when a request needs it.
 """
 
 from Class.model import Model
@@ -18,5 +17,5 @@ def offline_p2p(
     models_dict: dict[int, Model],
     adapters_dict: dict[tuple[int, int], Adapter],
 ) -> tuple[dict[tuple[int, int], bool], dict[tuple[int, int, int], bool]]:
-    """No preheating: leave the cluster cold. Returns empty decisions."""
+    """No preheating decisions."""
     return {}, {}

@@ -1,4 +1,4 @@
-"""Offline algorithm (Algorithm 1): Lazy Marginal-Gain Density Greedy Co-Caching."""
+"""Offline algorithm (Algorithm 1): Bandwidth-Aware Co-caching Greedy (BACG)."""
 
 import heapq
 import numpy as np
@@ -16,7 +16,7 @@ import config as C
 DENSITY_CUTOFF = 0.0
 
 
-def offline_greedy(
+def offline_bacg(
     requests: list[Request],
     cloudlets: list[Cloudlet],
     models_dict: dict[int, Model],
