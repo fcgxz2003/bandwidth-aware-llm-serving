@@ -11,10 +11,9 @@ from Class.request import Request
 from Class.cloudlet import Cloudlet
 import config as C
 
+
 # ═══════════════════════ EUA dataset loading ══════════════════════════
-
-
-def _haversine_km(lat1, lon1, lat2, lon2):
+def distance(lat1, lon1, lat2, lon2):
     """Haversine distance between two (lat, lon) points in km.
 
     Accepts scalars or numpy arrays.
@@ -34,7 +33,7 @@ def load_eua_cloudlet_coords(
     num_sample: int = C.NUM_CLOUDLETS,
     rng: np.random.Generator | None = None,
 ) -> np.ndarray:
-    """Load edge-server coordinates from EUA CSV and sample *num_sample*.
+    """Load edge-server coordinates from EUA CSV and sample.
 
     Returns an (num_sample, 2) array of [lat, lon].
     """
@@ -69,31 +68,28 @@ def load_eua_user_coords(csv_path: str = C.EUA_USER_CSV) -> np.ndarray:
 def assign_users_to_cloudlets(
     user_coords: np.ndarray, cloudlet_coords: np.ndarray
 ) -> np.ndarray:
-    """Assign each user to the nearest cloudlet (vectorised).
+    """Assign each user to the nearest cloudlet.
 
     Returns a (num_users,) int array of cloudlet indices.
     """
     # shape: (n_users, 1, 2) vs (1, n_cloudlets, 2)
     u = user_coords[:, np.newaxis, :]  # (U, 1, 2)
     c = cloudlet_coords[np.newaxis, :, :]  # (1, C, 2)
-    dists = _haversine_km(u[:, :, 0], u[:, :, 1], c[:, :, 0], c[:, :, 1])
+    dists = distance(u[:, :, 0], u[:, :, 1], c[:, :, 0], c[:, :, 1])
     return np.argmin(dists, axis=1)
 
 
 # ═══════════════════════ Cluster initialisation ══════════════════════
-
-
 def create_models() -> list[Model]:
-    """Create foundation models from the real open-source model catalog."""
+    """Create foundation models from model catalog."""
     return [Model(id=j, size=size) for j, (_, size) in enumerate(C.MODEL_CATALOG)]
 
 
 def create_adapters(models: list[Model], rng: np.random.Generator) -> list[Adapter]:
     """Create one adapter per (model, service_type) pair.
 
-    A LoRA adapter's footprint scales with its base model (hidden dimension and
-    layer count), so each adapter's size is a per-task fraction of the base
-    model size, clamped to a realistic absolute range.
+    A LoRA adapter's size scales with its base model (hidden dimension and
+    layer count).
     """
     frac_lo, frac_hi = getattr(C, "ADAPTER_SIZE_FRAC_RANGE", (0.01, 0.04))
     clamp_lo, clamp_hi = C.ADAPTER_SIZE_RANGE_GB
@@ -102,9 +98,7 @@ def create_adapters(models: list[Model], rng: np.random.Generator) -> list[Adapt
         for q in range(C.NUM_SERVICE_TYPES):
             frac = rng.uniform(frac_lo, frac_hi)
             size = float(np.clip(m.size * frac, clamp_lo, clamp_hi))
-            adapters.append(
-                Adapter(model_id=m.id, service_type=q, size=round(size, 4))
-            )
+            adapters.append(Adapter(model_id=m.id, service_type=q, size=round(size, 4)))
     return adapters
 
 
@@ -116,8 +110,6 @@ def create_cloudlets(
     """Create *num_cloudlets* cloudlets.
 
     Each cloudlet's storage capacity is sampled from CACHE_CAPACITY_RANGE_GB.
-    Pass *storage_caps* to reuse a fixed capacity vector across algorithms
-    (ensures a fair comparison); otherwise sample with *rng*.
     """
     if storage_caps is None:
         if rng is None:
@@ -130,7 +122,7 @@ def create_cloudlets(
 
 
 def sample_storage_caps(num_cloudlets: int, rng: np.random.Generator) -> np.ndarray:
-    """Sample a per-cloudlet storage capacity vector (GB)."""
+    """Sample a cloudlet storage capacity vector (GB)."""
     return rng.uniform(*C.CACHE_CAPACITY_RANGE_GB, size=num_cloudlets)
 
 
@@ -148,7 +140,7 @@ def build_delta_matrix(cloudlet_coords: np.ndarray) -> np.ndarray:
     # Vectorised pairwise haversine  (n, n)
     lat = cloudlet_coords[:, 0]
     lon = cloudlet_coords[:, 1]
-    dist = _haversine_km(lat[:, None], lon[:, None], lat[None, :], lon[None, :])
+    dist = distance(lat[:, None], lon[:, None], lat[None, :], lon[None, :])
 
     # Step function mapping
     peer = np.full_like(dist, C.DELTA_FAR)
@@ -162,8 +154,6 @@ def build_delta_matrix(cloudlet_coords: np.ndarray) -> np.ndarray:
 
 
 # ═══════════════════════ Request generation ═══════════════════════════
-
-
 def zipf_weights(num_models: int, alpha: float) -> np.ndarray:
     """Normalised Zipf weights over *num_models* ranks."""
     ranks = np.arange(1, num_models + 1, dtype=float)
@@ -197,7 +187,7 @@ def generate_requests_for_slot(
     user_assignments: np.ndarray | None = None,
     num_cloudlets: int = C.NUM_CLOUDLETS,
 ) -> list[Request]:
-    """Generate a list of requests for time-slot *slot*.
+    """Generate a list of requests for each time slot.
 
     - Total count ~ Poisson(mean * daily_multiplier).
     - Foundation model chosen by Zipf weights.
@@ -237,7 +227,7 @@ def generate_daily_trace(
     user_assignments: np.ndarray | None = None,
     num_cloudlets: int = C.NUM_CLOUDLETS,
 ) -> list[list[Request]]:
-    """Daily scenario: a recurring intra-day tidal demand over a fixed catalog."""
+    """Daily scenario: a recurring day tidal demand over a fixed catalog."""
     weights = zipf_weights(len(models), C.ZIPF_ALPHA)
     return [
         generate_requests_for_slot(
